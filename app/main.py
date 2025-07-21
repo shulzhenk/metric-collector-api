@@ -5,21 +5,19 @@ from psycopg2.extras import RealDictCursor
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-# Импортируем наш объект с настройками
 from .config import settings
 
-# --- Модель данных ---
+# Модель данных 
 class Visit(BaseModel):
     page_url: str
 
-# --- Создание приложения FastAPI ---
+# Создание приложения FastAPI 
 app = FastAPI(
     title="Metric Collector API",
     description="Простой сервис для сбора метрик посещений",
     version="1.0.0",
 )
 
-# --- Функция для подключения к БД (теперь использует настройки) ---
 def get_db_connection():
     """
     Устанавливает и возвращает соединение с базой данных.
@@ -37,7 +35,7 @@ def get_db_connection():
     except psycopg2.OperationalError as e:
         raise HTTPException(status_code=500, detail=f"Ошибка подключения к базе данных: {e}")
 
-# --- API Эндпоинты (с `with` и docstrings) ---
+# API Эндпоинты
 
 @app.post("/visit", status_code=201)
 def add_visit(visit: Visit) -> dict:
