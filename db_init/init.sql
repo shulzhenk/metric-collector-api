@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS visits (
+    id SERIAL PRIMARY KEY,
+    page_url VARCHAR(255) NOT NULL,
+    timestamp TIMESTAMPTZ DEFAULT NOW()
+);

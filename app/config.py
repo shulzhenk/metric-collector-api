@@ -1,15 +1,14 @@
 # app/config.py
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     """
     Класс для загрузки и валидации настроек из переменных окружения.
+    Pydantic автоматически находит переменные, переданные Docker Compose
     """
-    # Указываем pydantic, что нужно искать файл .env
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding='utf-8')
 
-    # Описываем наши переменные. Pydantic автоматически их найдет и проверит типы.
+    # Описываем наши переменные.
     db_name: str
     db_user: str
     db_pass: str

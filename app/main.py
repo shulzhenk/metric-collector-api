@@ -5,7 +5,7 @@ from psycopg2.extras import RealDictCursor
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-from .config import settings
+from config import settings
 
 # Модель данных 
 class Visit(BaseModel):
@@ -45,15 +45,29 @@ def add_visit(visit: Visit) -> dict:
     Принимает URL страницы и сохраняет информацию о визите в БД.
     Возвращает статус операции.
     """
-    # `with` автоматически управляет открытием/закрытием соединения и курсора
-    with get_db_connection() as conn:
+    conn = None  
+    try:
+        # Получаем соединение
+        conn = get_db_connection()
+        # Открываем курсор
         with conn.cursor() as cur:
             cur.execute(
                 "INSERT INTO visits (page_url) VALUES (%s)",
                 (visit.page_url,)
             )
-            # conn.commit() неявно вызывается при выходе из блока `with`
-    return {"status": "ok", "message": f"Визит на {visit.page_url} записан."}
+        # Явно коммитим транзакцию, если все прошло успешно
+        conn.commit()
+        return {"status": "ok", "message": f"Визит на {visit.page_url} записан."}
+    except Exception as e:
+        # Если произошла любая ошибка, откатываем транзакцию
+        if conn:
+            conn.rollback()
+        # И вызываем ошибку HTTP 500 с деталями
+        raise HTTPException(status_code=500, detail=f"Ошибка при работе с базой данных: {e}")
+    finally:
+        # В любом случае (успех или ошибка) закрываем соединение
+        if conn:
+            conn.close()
 
 @app.get("/stats")
 def get_stats() -> list[dict]:

@@ -1,4 +1,10 @@
-fastapi==0.116.1
-psycopg2_binary==2.9.10
-pydantic==2.11.7
-pydantic_settings==2.10.1
+# FastAPI и его сервер
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+
+# Работа с PostgreSQL
+psycopg2-binary==2.9.9
+
+# Работа с .env файлами и настройками
+pydantic-settings==2.2.1
+python-dotenv==1.0.1
